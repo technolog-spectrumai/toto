@@ -1,0 +1,127 @@
+{% extends "kodama/base.html" %}
+{% load theme_tags %}
+
+{% block left_pane %}
+<div class="px-4 sm:px-6 lg:px-8">
+  <div
+    class="w-fit mx-auto mb-10 p-4 rounded-xl shadow-sm transition"
+    :class="darkMode
+      ? '{{ theme|theme_class:"source_card:dark" }}'
+      : '{{ theme|theme_class:"source_card:light" }}'">
+      
+    <h2
+      class="text-2xl font-bold mb-4"
+      :class="darkMode
+        ? '{{ theme|theme_class:"section_title:dark" }}'
+        : '{{ theme|theme_class:"section_title:light" }}'">
+      Categories
+    </h2>
+
+    <ul class="space-y-2 text-sm">
+      {% for category in categories %}
+        <li>
+          <a
+            href="{% url 'articles_by_category' site.slug category.slug %}"
+            class="flex items-center gap-3 transition-colors"
+            :class="darkMode
+              ? '{{ theme|theme_class:"category_link:dark" }}'
+              : '{{ theme|theme_class:"category_link:light" }}'">
+            <i class="fas fa-folder-open text-xl"></i>
+            {{ category.name }}
+          </a>
+        </li>
+      {% empty %}
+        <li
+          class="text-center"
+          :class="darkMode
+            ? '{{ theme|theme_class:"meta_text:dark" }}'
+            : '{{ theme|theme_class:"meta_text:light" }}'">
+          No categories
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
+
+{% block right_pane %}
+<div class="px-4 sm:px-6 lg:px-8">
+
+  <!-- Tags Panel -->
+  <div
+    class="w-fit mx-auto mb-10 p-4 rounded-xl shadow-sm transition"
+    :class="darkMode
+      ? '{{ theme|theme_class:"source_card:dark" }}'
+      : '{{ theme|theme_class:"source_card:light" }}'">
+      
+    <h2
+      class="text-2xl font-bold mb-4"
+      :class="darkMode
+        ? '{{ theme|theme_class:"section_title:dark" }}'
+        : '{{ theme|theme_class:"section_title:light" }}'">
+      Tags
+    </h2>
+
+    <ul class="flex flex-wrap gap-2 text-sm">
+      {% for tag in tags %}
+        {% if tag.slug %}
+          <li>
+            <a
+              href="{% url 'articles_by_tag' site.slug tag.slug %}"
+              class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors"
+              :class="darkMode
+                ? '{{ theme|theme_class:"tag_link:dark" }}'
+                : '{{ theme|theme_class:"tag_link:light" }}'">
+              <i class="fas fa-hashtag text-sm"></i>
+              {{ tag.name }}
+            </a>
+          </li>
+        {% endif %}
+      {% empty %}
+        <li
+          class="text-center"
+          :class="darkMode
+            ? '{{ theme|theme_class:"meta_text:dark" }}'
+            : '{{ theme|theme_class:"meta_text:light" }}'">
+          No tags
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Library Panel -->
+  <div
+    class="w-fit mx-auto mb-10 p-4 rounded-xl shadow-sm text-center transition"
+    :class="darkMode
+      ? '{{ theme|theme_class:"source_card:dark" }}'
+      : '{{ theme|theme_class:"source_card:light" }}'">
+      
+    <h2
+      class="flex items-center justify-center gap-3 whitespace-nowrap text-2xl font-bold mb-4"
+      :class="darkMode
+        ? '{{ theme|theme_class:"section_title:dark" }}'
+        : '{{ theme|theme_class:"section_title:light" }}'">
+      <i class="fas fa-book-open text-xl"></i>
+      Our Library
+    </h2>
+
+    <p
+      class="text-sm mb-3"
+      :class="darkMode
+        ? '{{ theme|theme_class:"meta_text:dark" }}'
+        : '{{ theme|theme_class:"meta_text:light" }}'">
+      Discover all referenced materials, from books to videos.
+    </p>
+
+    <a
+      href="{% url 'source_list' site.slug %}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-md font-semibold transition-colors"
+      :class="darkMode
+        ? '{{ theme|theme_class:"library_link:dark" }}'
+        : '{{ theme|theme_class:"library_link:light" }}'">
+      <i class="fas fa-arrow-right text-sm"></i>
+      Go to Library
+    </a>
+  </div>
+</div>
+{% endblock %}

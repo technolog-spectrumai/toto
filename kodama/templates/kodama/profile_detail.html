@@ -1,0 +1,136 @@
+{% extends "kodama/frame.html" %}
+{% load theme_tags %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div
+  class="w-full max-w-3xl mx-auto my-12 shadow-lg rounded-lg overflow-hidden transition-colors"
+  :class="darkMode
+    ? '{{ theme|theme_class:"profile_wrapper:dark" }}'
+    : '{{ theme|theme_class:"profile_wrapper:light" }}'">
+
+  <div class="px-6 py-6">
+    <h1
+      class="text-2xl font-bold mb-4 text-center transition-colors"
+      :class="darkMode
+        ? '{{ theme|theme_class:"section_title:dark" }}'
+        : '{{ theme|theme_class:"section_title:light" }}'">
+      {{ profile.first_name }} {{ profile.last_name }}
+    </h1>
+
+    {% if profile.profile_picture %}
+      <div class="flex justify-center mb-6">
+        <img
+          src="{{ profile.profile_picture }}"
+          alt="Profile picture for {{ profile.username }}"
+          class="w-24 h-24 rounded-full object-cover shadow transition-colors"
+          :class="darkMode
+            ? '{{ theme|theme_class:"image_border:dark" }}'
+            : '{{ theme|theme_class:"image_border:light" }}'">
+      </div>
+    {% endif %}
+
+    <dl
+      class="divide-y transition-colors"
+      :class="darkMode
+        ? '{{ theme|theme_class:"profile_divider:dark" }}'
+        : '{{ theme|theme_class:"profile_divider:light" }}'">
+
+      <div class="py-3">
+        <dt
+          class="text-sm font-medium transition-colors"
+          :class="darkMode
+            ? '{{ theme|theme_class:"profile_field_label:dark" }}'
+            : '{{ theme|theme_class:"profile_field_label:light" }}'">
+          Username
+        </dt>
+        <dd
+          class="mt-1 text-lg transition-colors"
+          :class="darkMode
+            ? '{{ theme|theme_class:"profile_field_value:dark" }}'
+            : '{{ theme|theme_class:"profile_field_value:light" }}'">
+          @{{ profile.username }}
+        </dd>
+      </div>
+
+      {% if profile.email %}
+      <div class="py-3">
+        <dt
+          class="text-sm font-medium transition-colors"
+          :class="darkMode
+            ? '{{ theme|theme_class:"profile_field_label:dark" }}'
+            : '{{ theme|theme_class:"profile_field_label:light" }}'">
+          Email
+        </dt>
+        <dd class="mt-1">
+          <a
+            href="mailto:{{ profile.email }}"
+            class="font-medium hover:underline transition-colors"
+            :class="darkMode
+              ? '{{ theme|theme_class:"email_link:dark" }}'
+              : '{{ theme|theme_class:"email_link:light" }}'">
+            {{ profile.email }}
+          </a>
+        </dd>
+      </div>
+      {% endif %}
+
+      {% if profile.date_joined %}
+      <div class="py-3">
+        <dt
+          class="text-sm font-medium transition-colors"
+          :class="darkMode
+            ? '{{ theme|theme_class:"profile_field_label:dark" }}'
+            : '{{ theme|theme_class:"profile_field_label:light" }}'">
+          Joined
+        </dt>
+        <dd
+          class="mt-1 text-lg transition-colors"
+          :class="darkMode
+            ? '{{ theme|theme_class:"profile_field_value:dark" }}'
+            : '{{ theme|theme_class:"profile_field_value:light" }}'">
+          {{ profile.date_joined|date:"F j, Y" }}
+        </dd>
+      </div>
+      {% endif %}
+
+      {% if profile.bio %}
+      <div class="py-3">
+        <dt
+          class="text-sm font-medium transition-colors"
+          :class="darkMode
+            ? '{{ theme|theme_class:"profile_field_label:dark" }}'
+            : '{{ theme|theme_class:"profile_field_label:light" }}'">
+          Bio
+        </dt>
+        <dd
+          class="mt-1 text-base leading-relaxed whitespace-pre-wrap transition-colors"
+          :class="darkMode
+            ? '{{ theme|theme_class:"profile_field_value:dark" }}'
+            : '{{ theme|theme_class:"profile_field_value:light" }}'">
+          {{ profile.bio }}
+        </dd>
+      </div>
+      {% endif %}
+
+    </dl>
+  </div>
+
+  <div
+    class="px-6 py-4 border-t flex justify-between transition-colors"
+    :class="darkMode
+      ? '{{ theme|theme_class:"profile_footer:dark" }}'
+      : '{{ theme|theme_class:"profile_footer:light" }}'">
+    <a
+      href="{% url 'site_home' site.slug %}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors"
+      :class="darkMode
+        ? '{{ theme|theme_class:"profile_back_button:dark" }}'
+        : '{{ theme|theme_class:"profile_back_button:light" }}'">
+      <i class="fas fa-arrow-left"></i>
+      Back
+    </a>
+  </div>
+</div>
+{% endblock %}

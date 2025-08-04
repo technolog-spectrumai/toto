@@ -1,0 +1,84 @@
+{% extends "kodama/frame.html" %}
+{% load theme_tags %}
+
+{% block title %}{{ author.user.username }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+
+  <div class="mb-10 text-center">
+    {% if author.profile_picture %}
+      <img
+        src="{{ author.profile_picture.url }}"
+        alt="{{ author.user.username }}'s profile picture"
+        class="mx-auto w-24 h-24 rounded-full mb-4 object-cover border-2"
+        :class="darkMode
+          ? '{{ theme|theme_class:"image_border:dark" }}'
+          : '{{ theme|theme_class:"image_border:light" }}'">
+    {% endif %}
+
+    <h1
+      class="text-2xl font-bold mb-1"
+      :class="darkMode
+        ? '{{ theme|theme_class:"section_title:dark" }}'
+        : '{{ theme|theme_class:"section_title:light" }}'">
+      {{ author.user.username }}
+    </h1>
+
+    <p
+      class="text-sm text-center mb-2"
+      :class="darkMode
+        ? '{{ theme|theme_class:"meta_text:dark" }}'
+        : '{{ theme|theme_class:"meta_text:light" }}'">
+      Joined on {{ author.date_joined|date:"F j, Y" }}
+    </p>
+
+    {% if author.bio %}
+      <p
+        class="mt-4 text-sm"
+        :class="darkMode
+          ? '{{ theme|theme_class:"meta_text:dark" }}'
+          : '{{ theme|theme_class:"meta_text:light" }}'">
+        {{ author.bio }}
+      </p>
+    {% endif %}
+  </div>
+
+  <hr class="my-6 border"
+      :class="darkMode
+        ? '{{ theme|theme_class:"section_divider:dark" }}'
+        : '{{ theme|theme_class:"section_divider:light" }}'"/>
+
+  <h2
+    class="text-xl font-semibold text-center mb-4"
+    :class="darkMode
+      ? '{{ theme|theme_class:"section_title:dark" }}'
+      : '{{ theme|theme_class:"section_title:light" }}'">
+    Articles by {{ author.user.username }}
+  </h2>
+
+  {% if articles %}
+    {% include "kodama/article_list.html" with articles=articles %}
+  {% else %}
+    <p
+      class="text-center text-sm"
+      :class="darkMode
+        ? '{{ theme|theme_class:"meta_text:dark" }}'
+        : '{{ theme|theme_class:"meta_text:light" }}'">
+      No articles published by this author yet.
+    </p>
+  {% endif %}
+
+  <div class="mt-6 text-center">
+    <a
+      href="{% url 'site_home' site.slug %}"
+      class="font-medium"
+      :class="darkMode
+        ? '{{ theme|theme_class:"home_link:dark" }}'
+        : '{{ theme|theme_class:"home_link:light" }}'">
+      ← Back to All Articles
+    </a>
+  </div>
+
+</div>
+{% endblock %}

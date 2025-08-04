@@ -1,0 +1,75 @@
+{% load theme_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ page_title }}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    {% if font %}
+    <link href="{{ font.cdn_link }}"  rel="stylesheet">
+    {% endif %}
+    {% block start_script %}
+    {% endblock %}
+</head>
+<body
+  x-data="{
+    darkMode: false,
+    init() {
+      const now = new Date();
+      const hours = now.getHours();
+      this.darkMode = (hours >= 19 || hours < 6);
+      this.$el.dataset.dark = this.darkMode;
+    }
+  }"
+  x-init="init()"
+    {% if font %}
+      style="font-family: '{{ font.name }}', serif;"
+    {% endif %}
+  :class="darkMode ? '{{ theme|theme_class:"body:dark" }}' : '{{ theme|theme_class:"body:light" }}'"
+  class="transition-colors flex flex-col min-h-screen {{ theme.font.name }}"
+>
+
+<!-- Header -->
+<header
+  :class="darkMode ? '{{ theme|theme_class:"header:dark" }}' : '{{ theme|theme_class:"header:light" }}'"
+  class="shadow-lg sticky top-0 z-50 transition-colors">
+  {% include "kodama/header.html" with data=header site=site %}
+</header>
+
+<main class="flex-grow">
+  <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left Sidebar -->
+      <aside class="lg:col-span-2 lg:block">
+        {% block left_pane %}{% endblock %}
+      </aside>
+
+      <!-- Main Content -->
+      <div class="lg:col-span-8">
+        {% block content %}{% endblock %}
+      </div>
+
+      <!-- Right Sidebar -->
+      <aside class="lg:col-span-2 lg:block">
+        {% block right_pane %}{% endblock %}
+      </aside>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer
+  :class="darkMode ? '{{ theme|theme_class:"footer:dark" }}' : '{{ theme|theme_class:"footer:light" }}'"
+  class="py-10 transition-colors">
+  {% include "kodama/footer.html" with data=footer site=site %}
+</footer>
+
+{% block end_script %}
+{% endblock %}
+</body>
+</html>

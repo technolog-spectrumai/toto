@@ -1,0 +1,69 @@
+{% extends "forum/base.html" %}
+{% load static %}
+
+{% block title %} {{ thread.title }} | {{ config.site_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-3xl font-bold text-[#1B3B6F] mb-2">{{ thread.title }}</h2>
+    <p class="text-gray-600 mb-4">Started by <strong>{{ thread.author.username }}</strong> on {{ thread.created_at }}</p>
+
+    <div class="border-t pt-4">
+
+{% for post in posts %}
+<div class="mb-6" style="margin-left: {{ post.depth|add:0 }}rem;">
+    <div class="bg-white p-4 rounded-lg shadow-md">
+        <p class="font-bold">{{ post.author.username }}</p>
+        <p>{{ post.content }}</p>
+        {% if post.image %}
+        <img src="{{ post.image.url }}" class="mt-3 rounded-lg shadow-md max-w-xs">
+        {% endif %}
+    </div>
+
+    <!-- Reply Form (Only if Depth < 3) -->
+    {% if post.depth < 3 %}
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <textarea name="content" placeholder="Reply to this post..." class="w-full border rounded-lg p-2"></textarea>
+        <button type="submit" class="mt-2 bg-[#1B3B6F] text-white py-1 px-3 rounded-lg hover:bg-[#143061]">
+            Reply
+        </button>
+    </form>
+    {% endif %}
+
+    <!-- Render Replies Recursively -->
+    {% for child_post in post.child_posts.all %}
+        {% include "forum/reply.html" with post=child_post %}
+    {% endfor %}
+</div>
+{% endfor %}
+
+    </div>
+
+    <!-- Reply Form -->
+    <div class="mt-6 bg-gray-100 p-4 rounded-lg" x-data="{ fileName: '', dragging: false }">
+        <h3 class="text-xl font-bold text-[#1B3B6F] mb-2">Reply to Thread</h3>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <textarea name="content" class="w-full p-2 border rounded-lg" placeholder="Write your reply..."></textarea>
+
+            <!-- Drag and Drop Image Upload -->
+            <div class="mt-3 p-6 border-2 border-dashed rounded-lg text-center"
+                 :class="dragging ? 'border-[#1B3B6F]' : 'border-gray-300'"
+                 @dragover.prevent="dragging = true"
+                 @dragleave="dragging = false"
+                 @drop.prevent="dragging = false; fileName = $event.dataTransfer.files[0].name">
+                <p class="text-gray-700">Drag & drop an image here or click to select</p>
+                <input type="file" name="image" class="hidden" id="imageUpload" @change="fileName = $event.target.files[0].name">
+                <label for="imageUpload" class="cursor-pointer block mt-2 text-[#1B3B6F] underline">Choose file</label>
+                <p class="text-sm text-gray-500 mt-2" x-text="fileName"></p>
+            </div>
+
+            <button type="submit" class="mt-3 bg-[#1B3B6F] text-white py-2 px-4 rounded-lg hover:bg-[#143061]">
+                Post Reply
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

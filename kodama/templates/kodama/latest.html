@@ -1,0 +1,70 @@
+{% extends "kodama/frame.html" %}
+{% load theme_tags %}
+
+{% block title %}Latest Articles{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+  <div class="mb-10">
+
+    <h1
+      class="text-2xl font-bold text-center mb-2"
+      :class="darkMode
+        ? '{{ theme|theme_class:"section_title:dark" }}'
+        : '{{ theme|theme_class:"section_title:light" }}'">
+      Latest Articles
+    </h1>
+
+    <p
+      class="text-sm text-center mb-4"
+      :class="darkMode
+        ? '{{ theme|theme_class:"meta_text:dark" }}'
+        : '{{ theme|theme_class:"meta_text:light" }}'">
+      Catch up on the most recent posts from across all categories.
+    </p>
+
+    {% if articles %}
+      {% include "kodama/article_list.html" with articles=articles %}
+    {% else %}
+      <p
+        class="text-center text-sm"
+        :class="darkMode
+          ? '{{ theme|theme_class:"meta_text:dark" }}'
+          : '{{ theme|theme_class:"meta_text:light" }}'">
+        No articles have been published yet.
+      </p>
+    {% endif %}
+
+    <div class="mt-6 text-center">
+      <a
+        href="{% url 'site_home' site.slug %}"
+        class="font-medium"
+        :class="darkMode
+          ? '{{ theme|theme_class:"home_link:dark" }}'
+          : '{{ theme|theme_class:"home_link:light" }}'">
+        ← Back to Home
+      </a>
+    </div>
+
+  </div>
+
+  {% if user.is_authenticated and recommended %}
+    <div
+      class="pt-8 mt-10 border-t"
+      :class="darkMode
+        ? '{{ theme|theme_class:"section_divider:dark" }}'
+        : '{{ theme|theme_class:"section_divider:light" }}'">
+
+      <h2
+        class="text-xl font-semibold text-center mb-4"
+        :class="darkMode
+          ? '{{ theme|theme_class:"section_title:dark" }}'
+          : '{{ theme|theme_class:"section_title:light" }}'">
+        You May Also Like
+      </h2>
+
+      {% include "kodama/article_list.html" with articles=recommended %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

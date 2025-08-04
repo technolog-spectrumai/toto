@@ -1,0 +1,40 @@
+{% load theme_tags %}
+
+<div class="mb-8">
+  <h3
+    class="text-xl font-bold mb-2"
+    :class="darkMode
+      ? '{{ theme|theme_class:"section_title:dark" }}'
+      : '{{ theme|theme_class:"section_title:light" }}'">
+    {{ section.order }}. {{ section.title }}
+  </h3>
+
+  {% if section.image %}
+    <div class="mb-6 mt-4 text-center">
+      <img
+        src="{{ section.image.file }}"
+        alt="{{ section.image.title }}"
+        class="max-w-2xl mx-auto rounded shadow"
+        :class="darkMode
+          ? '{{ theme|theme_class:"image_border:dark" }}'
+          : '{{ theme|theme_class:"image_border:light" }}'">
+      {% if section.image.title %}
+        <p
+          class="mt-2 text-sm italic"
+          :class="darkMode
+            ? '{{ theme|theme_class:"image_caption:dark" }}'
+            : '{{ theme|theme_class:"image_caption:light" }}'">
+          {{ section.image.title }}
+        </p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div
+    class="markdown-content"
+    :class="darkMode
+      ? '{{ theme|theme_class:"section_body:dark" }}'
+      : '{{ theme|theme_class:"section_body:light" }}'">
+    {{ section.content|safe }}
+  </div>
+</div>

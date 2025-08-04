@@ -1,0 +1,79 @@
+{% extends "kodama/base.html" %}
+{% load theme_tags %}
+
+{% block title %}About Us{% endblock %}
+
+{% block start_script %}
+<style>
+.markdown-content ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+.markdown-content li {
+    margin-bottom: 6px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto p-8">
+
+  <h1
+    class="text-4xl font-bold text-center mb-6"
+    :class="darkMode
+      ? '{{ theme|theme_class:"section_title:dark" }}'
+      : '{{ theme|theme_class:"section_title:light" }}'">
+    {{ site.site_title }}
+  </h1>
+
+  <!-- About Section -->
+  <article
+    class="p-6 rounded-lg shadow-md transition markdown-content"
+    :class="darkMode
+      ? '{{ theme|theme_class:"content_box:dark" }}'
+      : '{{ theme|theme_class:"content_box:light" }}'">
+    {{ site.about_page_content|safe }}
+  </article>
+
+  <!-- Company Address -->
+  <div
+    class="mt-12 p-6 rounded-lg shadow-md transition text-center"
+    :class="darkMode
+      ? '{{ theme|theme_class:"company_card:dark" }}'
+      : '{{ theme|theme_class:"company_card:light" }}'">
+
+    <h2
+      class="text-2xl font-bold mb-4"
+      :class="darkMode
+        ? '{{ theme|theme_class:"section_title:dark" }}'
+        : '{{ theme|theme_class:"section_title:light" }}'">
+      Contact Us
+    </h2>
+
+    <p
+      class="text-md mb-2"
+      :class="darkMode
+        ? '{{ theme|theme_class:"meta_text:dark" }}'
+        : '{{ theme|theme_class:"meta_text:light" }}'">
+      Phone: {{ site.contact_phone }}
+    </p>
+
+    <p
+      class="text-md"
+      :class="darkMode
+        ? '{{ theme|theme_class:"meta_text:dark" }}'
+        : '{{ theme|theme_class:"meta_text:light" }}'">
+      Email:
+      <a
+        href="mailto:{{ site.contact_email }}"
+        class="hover:underline"
+        :class="darkMode
+          ? '{{ theme|theme_class:"email_link:dark" }}'
+          : '{{ theme|theme_class:"email_link:light" }}'">
+        {{ site.contact_email }}
+      </a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}

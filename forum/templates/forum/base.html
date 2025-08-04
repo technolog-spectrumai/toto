@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}App Name{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #F2F9FF;
+            color: #1B3B6F;
+        }
+    </style>
+    {% block start_script %}{% endblock %}
+</head>
+<body class="flex flex-col min-h-screen" x-data="{ menuOpen: false }">
+
+    <!-- App Bar -->
+    <header class="bg-[#1B3B6F] text-white py-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            {% block nav %}
+                <div class="container mx-auto flex justify-between items-center px-4">
+                    <!-- Menu Button -->
+                    <button @click="menuOpen = !menuOpen" class="text-white text-xl mr-4">
+                        <i class="fas fa-bars"></i>
+                    </button>
+
+                    <h1 class="text-xl font-bold">{{ app_name }}</h1>
+
+                    <nav class="hidden md:flex">
+                        <a href="/nest/dashboard" class="mx-2 hover:underline">Dashboard</a>
+                        <a href="/nest/profile" class="mx-2 hover:underline">Profile</a>
+                        <a href="/nest/logout" class="mx-2 hover:underline">Logout</a>
+                    </nav>
+                </div>
+            {% endblock %}
+        </div>
+    </header>
+
+    <!-- Sidebar remains outside of the content block -->
+    <div class="flex flex-grow">
+        <aside class="w-64 bg-gray-200 p-4 shadow-lg h-screen fixed top-0 left-0 transition-transform duration-300 ease-in-out"
+            :class="menuOpen ? 'translate-x-0' : '-translate-x-full'">
+            <h2 class="text-xl font-bold text-[#1B3B6F] mb-4">Threads</h2>
+            <ul>
+                {% for thread_item in threads %}
+                <li class="mb-2">
+                    <a href="/thread/{{ thread_item.id }}" class="block bg-white p-2 rounded-lg shadow-sm hover:bg-gray-100">
+                        {{ thread_item.title }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-8" @click="menuOpen = false">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Footer always at the bottom -->
+    <footer class="bg-[#1B3B6F] text-white py-4 mt-auto text-center shadow-lg">
+        <p>&copy; 2025 App Name. All rights reserved.</p>
+    </footer>
+
+    {% block end_script %}{% endblock %}
+</body>
+</html>

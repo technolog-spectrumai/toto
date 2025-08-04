@@ -1,0 +1,184 @@
+{% load theme_tags %}
+
+<nav class="w-full" x-data="{ mobileOpen: false, desktopCatOpen: false }">
+  <div
+    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16"
+    :class="darkMode
+      ? '{{ theme|theme_class:"navbar_wrapper:dark" }}'
+      : '{{ theme|theme_class:"navbar_wrapper:light" }}'">
+
+    <!-- Site Title -->
+    <h1
+      class="text-2xl font-extrabold"
+      :class="darkMode
+        ? '{{ theme|theme_class:"navbar_title:dark" }}'
+        : '{{ theme|theme_class:"navbar_title:light" }}'">
+      {{ site.site_title }}
+    </h1>
+
+    <!-- Desktop Search + Links + Toggle -->
+    <div class="hidden lg:flex items-center space-x-6">
+
+      {% if show_search %}
+        <!-- Inline Search Form -->
+        <form
+          action="{% url 'article_search' site.slug %}"
+          method="get"
+          class="flex items-center space-x-2">
+          <input
+            type="text"
+            name="q"
+            placeholder="Search..."
+            class="px-3 py-1.5 rounded-md text-sm transition-all focus:outline-none focus:ring-2 border"
+            :class="darkMode
+              ? '{{ theme|theme_class:"search_field:dark" }}'
+              : '{{ theme|theme_class:"search_field:light" }}'">
+          <button
+            type="submit"
+            class="px-3 py-1.5 rounded-md text-sm font-semibold transition-colors border"
+            :class="darkMode
+              ? '{{ theme|theme_class:"search_submit:dark" }}'
+              : '{{ theme|theme_class:"search_submit:light" }}'">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      {% endif %}
+
+      {% for link in data.nav_links %}
+        {% if link.dropdown %}
+          <!-- Dropdown Menu -->
+          <div
+            class="relative"
+            @mouseenter="desktopCatOpen = true"
+            @mouseleave="desktopCatOpen = false">
+
+            <button
+              class="flex items-center space-x-2 transition-all duration-200"
+              :class="darkMode
+                ? '{{ theme|theme_class:"nav_link:dark" }}'
+                : '{{ theme|theme_class:"nav_link:light" }}'">
+              <i class="{{ link.icon }}"></i>
+              <span class="hover:font-bold">{{ link.name }}</span>
+              <i class="fas fa-chevron-down ml-1 text-xs"></i>
+            </button>
+
+            <div
+              x-show="desktopCatOpen"
+              x-transition
+              class="absolute top-full mt-2 py-2 w-48 z-50 rounded-lg shadow-md"
+              :class="darkMode
+                ? '{{ theme|theme_class:"nav_dropdown:dark" }}'
+                : '{{ theme|theme_class:"nav_dropdown:light" }}'">
+              {% for sub in link.dropdown %}
+                <a
+                  href="{{ sub.url }}"
+                  class="block px-4 py-2 text-sm flex items-center space-x-2"
+                  :class="darkMode ? 'hover:bg-gray-800' : 'hover:bg-white'">
+                  <i class="{{ sub.icon }}"></i>
+                  <span class="hover:font-bold">{{ sub.name }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+
+        {% else %}
+          <!-- Single Link -->
+          <a
+            href="{{ link.url }}"
+            class="flex items-center space-x-2 transition-all duration-200"
+            :class="darkMode
+              ? '{{ theme|theme_class:"nav_link:dark" }}'
+              : '{{ theme|theme_class:"nav_link:light" }}'">
+            <i class="{{ link.icon }}"></i>
+            <span class="hover:font-bold">{{ link.name }}</span>
+          </a>
+        {% endif %}
+      {% endfor %}
+
+      <!-- Theme Toggle -->
+      <button
+        @click="darkMode = !darkMode"
+        class="px-3 py-2 text-sm font-bold border rounded-lg flex items-center justify-center transition"
+        :class="darkMode
+          ? '{{ theme|theme_class:"toggle_button:dark" }}'
+          : '{{ theme|theme_class:"toggle_button:light" }}'">
+        <i :class="darkMode ? 'fas fa-moon' : 'fas fa-sun'"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button @click="mobileOpen = !mobileOpen" class="lg:hidden text-2xl focus:outline-none">
+      <i
+        :class="mobileOpen ? 'fas fa-times' : 'fas fa-bars'"
+        :class="darkMode
+          ? '{{ theme|theme_class:"navbar_title:dark" }}'
+          : '{{ theme|theme_class:"navbar_title:light" }}'">
+      </i>
+    </button>
+  </div>
+
+  <!-- Mobile Navigation Panel -->
+  <div
+    x-show="mobileOpen"
+    x-transition
+    class="absolute top-16 left-0 w-full z-40 pt-4 pb-6 px-4 space-y-3 shadow-lg lg:hidden"
+    :class="darkMode
+      ? '{{ theme|theme_class:"mobile_nav_panel:dark" }}'
+      : '{{ theme|theme_class:"mobile_nav_panel:light" }}'">
+
+    {% for link in data.nav_links %}
+      {% if link.dropdown %}
+        <!-- Mobile Accordion -->
+        <div x-data="{ open: false }">
+          <button
+            @click="open = !open"
+            class="w-full flex justify-between items-center px-2 py-2"
+            :class="darkMode
+              ? '{{ theme|theme_class:"nav_link:dark" }}'
+              : '{{ theme|theme_class:"nav_link:light" }}'">
+            <span class="flex items-center space-x-2">
+              <i class="{{ link.icon }}"></i>
+              <span class="hover:font-bold">{{ link.name }}</span>
+            </span>
+            <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
+          </button>
+
+          <div x-show="open" x-transition class="pl-6 pt-2 space-y-1">
+            {% for sub in link.dropdown %}
+              <a
+                href="{{ sub.url }}"
+                class="flex items-center space-x-2"
+                :class="darkMode
+                  ? '{{ theme|theme_class:"nav_link:dark" }}'
+                  : '{{ theme|theme_class:"nav_link:light" }}'">
+                <i class="{{ sub.icon }}"></i>
+                <span class="hover:font-bold">{{ sub.name }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+
+      {% else %}
+        <a
+          href="{{ link.url }}"
+          class="flex items-center space-x-2"
+          :class="darkMode
+            ? '{{ theme|theme_class:"nav_link:dark" }}'
+            : '{{ theme|theme_class:"nav_link:light" }}'">
+          <i class="{{ link.icon }}"></i>
+          <span class="hover:font-bold">{{ link.name }}</span>
+        </a>
+      {% endif %}
+    {% endfor %}
+
+    <!-- Mobile Theme Toggle -->
+    <button
+      @click="darkMode = !darkMode"
+      class="w-full px-4 py-2 text-sm font-bold border rounded-lg flex items-center justify-start mt-2"
+      :class="darkMode
+        ? '{{ theme|theme_class:"toggle_button:dark" }}'
+        : '{{ theme|theme_class:"toggle_button:light" }}'">
+      <i :class="darkMode ? 'fas fa-moon' : 'fas fa-sun'"></i>
+    </button>
+  </div>
+</nav>
