@@ -56,9 +56,20 @@ class Command(BaseCommand):
         call_command("create_root_theme")
         self.stdout.write(self.style.SUCCESS("Fonts and theme created."))
 
+        self.stdout.write(self.style.NOTICE("Creating superuser..."))
+        call_command("create_user", "admin", "admin", admin=True)
+        self.stdout.write(self.style.SUCCESS("Superuser created."))
+
+        self.stdout.write(self.style.NOTICE("Creating homepage..."))
+        call_command("create_page")
+        self.stdout.write(self.style.SUCCESS("Homepage created."))
+
         latest_theme_id = self.get_latest_theme_id()
+        latest_page = self.get_latest_page()
+
         site_name = "TOTO Community Platform"
         self.stdout.write(self.style.NOTICE("Creating platform..."))
+
         create_platform_args = [
             site_name,
             domain,
@@ -66,15 +77,22 @@ class Command(BaseCommand):
             str(latest_tls_cert_id),
             "--active=True"
         ]
+
         if latest_theme_id:
             create_platform_args.append(f"--theme_id={latest_theme_id}")
+
+        if latest_page:
+            homepage_url = "netogami/pages/" + latest_page.slug + "/" + latest_page.language
+            create_platform_args.append(f"--index_url={homepage_url}")
+        else:
+            self.stdout.write(self.style.WARNING("No homepage found — platform will be created without index_url."))
 
         call_command("create_platform", *create_platform_args)
         self.stdout.write(self.style.SUCCESS("Platform created."))
 
-        self.stdout.write(self.style.NOTICE("Creating superuser..."))
-        call_command("create_user", "admin", "admin", admin=True)
-        self.stdout.write(self.style.SUCCESS("Superuser created."))
+        call_command("create_platform", *create_platform_args)
+        self.stdout.write(self.style.SUCCESS("Platform created."))
+
 
         self.stdout.write(self.style.NOTICE("Saving TLS certificate files..."))
         cert_dir = os.path.abspath(os.path.join("..", "cert"))
@@ -155,3 +173,10 @@ class Command(BaseCommand):
         from oya.models import Theme  # Import locally to avoid circular imports
         latest_theme = Theme.objects.order_by("-id").first()
         return latest_theme.id if latest_theme else None
+
+    def get_latest_page(self):
+        from netogami.models import Page
+        latest_page = Page.objects.order_by("-created_at").first()
+        return latest_page
+
+
