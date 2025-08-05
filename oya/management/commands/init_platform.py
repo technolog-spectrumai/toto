@@ -90,27 +90,27 @@ class Command(BaseCommand):
                      "--icon=fas fa-user", "--link=/nest/profile/")
         self.stdout.write(self.style.SUCCESS("Dashboard blocks created successfully."))
 
-        self.stdout.write(self.style.NOTICE("Creating theme..."))
-        theme_name = "blue_elf"
-        call_command("create_theme", theme_name)
-
-        blog_site_name = "kodama"
-        self.stdout.write(self.style.NOTICE("Creating SiteConfig..."))
-        call_command("create_site", blog_site_name, theme_name)
-        self.stdout.write(self.style.SUCCESS(f"SiteConfig created successfully: {blog_site_name}"))
-
-        self.stdout.write(self.style.NOTICE("Creating default articles and categories..."))
-        call_command("create_content", blog_site_name)
-        self.stdout.write(self.style.SUCCESS("Default content created successfully."))
-
-        self.stdout.write(self.style.NOTICE("Creating test user..."))
-        call_command("create_user", "janek", "janek", admin=False)
-
-        self.stdout.write(self.style.NOTICE("Creating test page..."))
-        call_command("create_page")
-
-        self.stdout.write(self.style.NOTICE("Creating sources..."))
-        call_command("create_sources")
+        # self.stdout.write(self.style.NOTICE("Creating theme..."))
+        # theme_name = "blue_elf"
+        # call_command("create_theme", theme_name)
+        #
+        # blog_site_name = "kodama"
+        # self.stdout.write(self.style.NOTICE("Creating SiteConfig..."))
+        # call_command("create_site", blog_site_name, theme_name)
+        # self.stdout.write(self.style.SUCCESS(f"SiteConfig created successfully: {blog_site_name}"))
+        #
+        # self.stdout.write(self.style.NOTICE("Creating default articles and categories..."))
+        # call_command("create_content", blog_site_name)
+        # self.stdout.write(self.style.SUCCESS("Default content created successfully."))
+        #
+        # self.stdout.write(self.style.NOTICE("Creating test user..."))
+        # call_command("create_user", "janek", "janek", admin=False)
+        #
+        # self.stdout.write(self.style.NOTICE("Creating test page..."))
+        # call_command("create_page")
+        #
+        # self.stdout.write(self.style.NOTICE("Creating sources..."))
+        # call_command("create_sources")
 
 
     def clear_db(self):
