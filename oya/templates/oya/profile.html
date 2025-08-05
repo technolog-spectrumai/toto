@@ -11,17 +11,28 @@
   class="min-h-screen px-4 py-10 transition-colors duration-300">
 
   <div class="max-w-3xl mx-auto">
-    <h1 class="text-4xl font-extrabold mb-6 tracking-tight">
+    <h1 class="text-4xl font-extrabold mb-6 tracking-tight"
+        :class="darkMode ? 'text-text-main-dark' : 'text-text-main-light'">
       Your Profile
     </h1>
 
     {% if profile %}
-    <div class="bg-bubble-bg-light dark:bg-bubble-bg-dark p-6 rounded-xl shadow-md">
+    <div
+      :class="darkMode
+        ? 'bg-bubble-bg-dark text-text-main-dark'
+        : 'bg-bubble-bg-light text-text-main-light'"
+      class="p-6 rounded-xl shadow-md transition-colors duration-300">
+
       <div class="flex items-center space-x-4 mb-4">
         {% if profile.avatar %}
-          <img src="{{ profile.avatar.url }}" alt="Avatar" class="w-20 h-20 rounded-full object-cover">
+          <img src="{{ profile.avatar.url }}" alt="Avatar"
+               class="w-20 h-20 rounded-full object-cover border border-accent-1 dark:border-accent-dark">
         {% else %}
-          <div class="w-20 h-20 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-2xl">
+          <div
+            :class="darkMode
+              ? 'bg-gray-700 text-white'
+              : 'bg-gray-300 text-gray-800'"
+            class="w-20 h-20 rounded-full flex items-center justify-center text-sm font-medium">
             No avatar
           </div>
         {% endif %}
@@ -31,7 +42,7 @@
         </div>
       </div>
 
-      <p class="mb-4">{{ profile.bio|default:"No bio provided." }}</p>
+      <p class="mb-4 opacity-90">{{ profile.bio|default:"No bio provided." }}</p>
 
       <h3 class="text-lg font-semibold mb-2">Memberships:</h3>
       <ul class="list-disc list-inside">
@@ -44,7 +55,12 @@
     </div>
 
     {% else %}
-    <div class="bg-bubble-bg-light dark:bg-bubble-bg-dark p-6 rounded-xl shadow-md">
+    <div
+      :class="darkMode
+        ? 'bg-bubble-bg-dark text-text-main-dark'
+        : 'bg-bubble-bg-light text-text-main-light'"
+      class="p-6 rounded-xl shadow-md transition-colors duration-300">
+
       <h2 class="text-2xl font-semibold mb-4">Basic Account Info</h2>
       <ul class="text-left space-y-2">
         <li><strong>Username:</strong> {{ username }}</li>
