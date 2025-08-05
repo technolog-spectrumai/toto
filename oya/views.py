@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from oya.models import DashboardBlock, MembershipApplication, generate_code
+from oya.models import DashboardBlock, MembershipApplication, generate_code, CommunityMember
 from .page import PageProcessor
 import os
 from django.contrib.auth import authenticate, login
@@ -187,6 +187,26 @@ def reference_next(request, application_id):
         _get_template("reference_next.html"),
         processor.decorate(context, request)
     )
+
+
+@login_required
+def profile_view(request):
+    processor = PageProcessor()
+    user = request.user
+
+    try:
+        profile = user.community_profile
+    except CommunityMember.DoesNotExist:
+        profile = None
+
+    context = {
+        "page_title": "Your Profile",
+        "profile": profile,
+        "username": user.username,
+        "email": user.email,
+    }
+
+    return render(request, _get_template("profile.html"), processor.decorate(context, request))
 
 
 @login_required

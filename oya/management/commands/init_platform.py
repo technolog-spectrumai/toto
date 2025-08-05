@@ -87,7 +87,7 @@ class Command(BaseCommand):
                      "--icon=fas fa-comments", "--link=/nest/not-implemented/")
         call_command("create_dashboard_block", "Profile",
                      "--description=Manage your personal information and settings.",
-                     "--icon=fas fa-user", "--link=/nest/not-implemented/")
+                     "--icon=fas fa-user", "--link=/nest/profile/")
         self.stdout.write(self.style.SUCCESS("Dashboard blocks created successfully."))
 
         # self.stdout.write(self.style.NOTICE("Creating theme..."))
