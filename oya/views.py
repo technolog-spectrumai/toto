@@ -173,7 +173,6 @@ def reference_request_view(request, application_id):
     )
 
 
-
 def reference_next(request, application_id):
     processor = PageProcessor()
     application = get_object_or_404(MembershipApplication, pk=application_id)
@@ -189,6 +188,14 @@ def reference_next(request, application_id):
         processor.decorate(context, request)
     )
 
+
+@login_required
+def not_implemented(request):
+    processor = PageProcessor()
+    context = {
+        "page_title": "Not Implemented"
+    }
+    return render(request, _get_template("placeholder.html"), processor.decorate(context, request))
 
 
 

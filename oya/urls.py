@@ -12,4 +12,5 @@ urlpatterns = [
     path("verify/success/", views.verification_success_view, name="application_verified"),
     path("reference/submit/<int:application_id>/", views.reference_request_view, name="reference_request"),
     path("reference/next/<int:application_id>/", views.reference_next, name="reference_next"),
+    path("not-implemented/", views.not_implemented, name="not_implemented"),
 ]
