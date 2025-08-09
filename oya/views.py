@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from oya.models import DashboardBlock, MembershipApplication, generate_code
+from oya.models import DashboardBlock, MembershipApplication, generate_code, CommunityMember
 from .page import PageProcessor
 import os
 from django.contrib.auth import authenticate, login
@@ -173,7 +173,6 @@ def reference_request_view(request, application_id):
     )
 
 
-
 def reference_next(request, application_id):
     processor = PageProcessor()
     application = get_object_or_404(MembershipApplication, pk=application_id)
@@ -189,6 +188,47 @@ def reference_next(request, application_id):
         processor.decorate(context, request)
     )
 
+
+@login_required
+def profile_view(request):
+    processor = PageProcessor()
+    user = request.user
+
+    try:
+        profile = user.community_profile
+    except CommunityMember.DoesNotExist:
+        profile = None
+
+    context = {
+        "page_title": "Your Profile",
+        "profile": profile,
+        "username": user.username,
+        "email": user.email,
+    }
+
+    return render(request, _get_template("profile.html"), processor.decorate(context, request))
+
+
+@login_required
+def not_implemented(request):
+    processor = PageProcessor()
+    context = {
+        "page_title": "Not Implemented"
+    }
+    return render(request, _get_template("placeholder.html"), processor.decorate(context, request))
+
+
+def root_view(request):
+    try:
+        processor = PageProcessor()
+        index_url = processor.config.index_url
+        if not index_url:
+            raise Http404("No index URL configured for active platform.")
+        return redirect(f"/{index_url}/")
+    except Http404:
+        raise
+    except Exception:
+        raise Http404("Failed to determine platform index URL.")
 
 
 

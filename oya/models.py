@@ -213,6 +213,7 @@ class Platform(models.Model):
 
     publication_year = models.IntegerField()
     active = models.BooleanField(default=True)
+    index_url = models.CharField(max_length=255, blank=True, null=True)
 
     tls_certificate = models.OneToOneField(
         TLSCertificate,

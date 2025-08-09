@@ -10,12 +10,23 @@ import qrcode
 import os
 
 
-class TLSCertificate(models.Model):
-    country_name = models.CharField(max_length=2, verbose_name="Country (C)")
-    state_or_province_name = models.CharField(max_length=100, verbose_name="State/Province (ST)")
-    locality_name = models.CharField(max_length=100, verbose_name="Locality (L)")
-    organization_name = models.CharField(max_length=255, verbose_name="Organization (O)")
+class BaseCertificate(models.Model):
     common_name = models.CharField(max_length=255, verbose_name="Common Name (CN)")
+    issued_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f"Certificate for {self.common_name}"
+
+
+class TLSCertificate(BaseCertificate):
+    country_name = models.CharField(max_length=2)
+    state_or_province_name = models.CharField(max_length=100)
+    locality_name = models.CharField(max_length=100)
+    organization_name = models.CharField(max_length=255)
     private_key = models.TextField(blank=True, null=True)
     certificate = models.TextField(blank=True, null=True)
     qr_code = models.ImageField(upload_to="qr_codes/", blank=True, null=True)
@@ -101,3 +112,66 @@ class TLSCertificate(models.Model):
             img.save(buffer, format="PNG")
             self.qr_code.save(f"qr_{self.common_name}.png", ContentFile(buffer.getvalue()), save=False)
             buffer.close()
+
+
+class ExternalCertificate(BaseCertificate):
+    domain = models.CharField(max_length=255, unique=True)
+    email = models.EmailField()
+    auth_url = models.URLField(default="http://localhost:8000/.well-known/acme-challenge/")
+    cert_dir = models.CharField(max_length=512, default="/home/janek/certbot")
+    debug = models.BooleanField(default=False)
+    success = models.BooleanField(default=False)
+    cert_path = models.CharField(max_length=512, blank=True)
+    key_path = models.CharField(max_length=512, blank=True)
+    issued_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+
+    def issue_certificate(self):
+        import subprocess
+        from django.utils import timezone
+        import logging
+        import os
+
+        logger = logging.getLogger(__name__)
+
+        config_dir = os.path.join(self.cert_dir, "config")
+        work_dir = os.path.join(self.cert_dir, "work")
+        logs_dir = os.path.join(self.cert_dir, "logs")
+        webroot_path = "/home/janek/Desktop/dev/toto/toto/acme-challenges"
+
+        command = ["certbot"]
+        if self.debug:
+            command.extend(["certonly", "--dry-run"])
+        else:
+            command.extend(["certonly"])
+
+        command.extend([
+            "--webroot",
+            "-w", webroot_path,
+            "-d", self.domain,
+            "--agree-tos",
+            "--email", self.email,
+            "--non-interactive",
+            "--config-dir", config_dir,
+            "--work-dir", work_dir,
+            "--logs-dir", logs_dir
+        ])
+        try:
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            self.success = True
+            self.issued_at = timezone.now()
+            self.cert_path = os.path.join(config_dir, "live", self.domain, "fullchain.pem")
+            self.key_path = os.path.join(config_dir, "live", self.domain, "privkey.pem")
+            logger.info(f"✅ Certificate {'dry run' if self.debug else 'issued'} for {self.domain}")
+        except subprocess.CalledProcessError as e:
+            self.success = False
+            logger.error(f"Failed to {'dry run' if self.debug else 'issue'} certificate for {self.domain}: {e.stderr}")
+            print(f"Failed to {'dry run' if self.debug else 'issue'} certificate for {self.domain}: {e.stderr}")
+
+            print(e.stderr)
+        else:
+            print("OK")
+            self.success = True
+        self.save()
+
+

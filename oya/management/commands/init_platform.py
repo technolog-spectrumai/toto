@@ -56,9 +56,20 @@ class Command(BaseCommand):
         call_command("create_root_theme")
         self.stdout.write(self.style.SUCCESS("Fonts and theme created."))
 
+        self.stdout.write(self.style.NOTICE("Creating superuser..."))
+        call_command("create_user", "admin", "admin", admin=True)
+        self.stdout.write(self.style.SUCCESS("Superuser created."))
+
+        self.stdout.write(self.style.NOTICE("Creating homepage..."))
+        call_command("create_page")
+        self.stdout.write(self.style.SUCCESS("Homepage created."))
+
         latest_theme_id = self.get_latest_theme_id()
+        latest_page = self.get_latest_page()
+
         site_name = "TOTO Community Platform"
         self.stdout.write(self.style.NOTICE("Creating platform..."))
+
         create_platform_args = [
             site_name,
             domain,
@@ -66,15 +77,22 @@ class Command(BaseCommand):
             str(latest_tls_cert_id),
             "--active=True"
         ]
+
         if latest_theme_id:
             create_platform_args.append(f"--theme_id={latest_theme_id}")
+
+        if latest_page:
+            homepage_url = "netogami/pages/" + latest_page.slug + "/" + latest_page.language
+            create_platform_args.append(f"--index_url={homepage_url}")
+        else:
+            self.stdout.write(self.style.WARNING("No homepage found — platform will be created without index_url."))
 
         call_command("create_platform", *create_platform_args)
         self.stdout.write(self.style.SUCCESS("Platform created."))
 
-        self.stdout.write(self.style.NOTICE("Creating superuser..."))
-        call_command("create_user", "admin", "admin", admin=True)
-        self.stdout.write(self.style.SUCCESS("Superuser created."))
+        call_command("create_platform", *create_platform_args)
+        self.stdout.write(self.style.SUCCESS("Platform created."))
+
 
         self.stdout.write(self.style.NOTICE("Saving TLS certificate files..."))
         cert_dir = os.path.abspath(os.path.join("..", "cert"))
@@ -84,33 +102,33 @@ class Command(BaseCommand):
         self.stdout.write(self.style.NOTICE("Creating default dashboard blocks..."))
         call_command("create_dashboard_block", "Forum",
                      "--description=Engage in discussions with the community.",
-                     "--icon=fas fa-comments", "--link=/forum/thread/1")
+                     "--icon=fas fa-comments", "--link=/nest/not-implemented/")
         call_command("create_dashboard_block", "Profile",
                      "--description=Manage your personal information and settings.",
                      "--icon=fas fa-user", "--link=/nest/profile/")
         self.stdout.write(self.style.SUCCESS("Dashboard blocks created successfully."))
 
-        self.stdout.write(self.style.NOTICE("Creating theme..."))
-        theme_name = "blue_elf"
-        call_command("create_theme", theme_name)
-
-        blog_site_name = "kodama"
-        self.stdout.write(self.style.NOTICE("Creating SiteConfig..."))
-        call_command("create_site", blog_site_name, theme_name)
-        self.stdout.write(self.style.SUCCESS(f"SiteConfig created successfully: {blog_site_name}"))
-
-        self.stdout.write(self.style.NOTICE("Creating default articles and categories..."))
-        call_command("create_content", blog_site_name)
-        self.stdout.write(self.style.SUCCESS("Default content created successfully."))
-
-        self.stdout.write(self.style.NOTICE("Creating test user..."))
-        call_command("create_user", "janek", "janek", admin=False)
-
-        self.stdout.write(self.style.NOTICE("Creating test page..."))
-        call_command("create_page")
-
-        self.stdout.write(self.style.NOTICE("Creating sources..."))
-        call_command("create_sources")
+        # self.stdout.write(self.style.NOTICE("Creating theme..."))
+        # theme_name = "blue_elf"
+        # call_command("create_theme", theme_name)
+        #
+        # blog_site_name = "kodama"
+        # self.stdout.write(self.style.NOTICE("Creating SiteConfig..."))
+        # call_command("create_site", blog_site_name, theme_name)
+        # self.stdout.write(self.style.SUCCESS(f"SiteConfig created successfully: {blog_site_name}"))
+        #
+        # self.stdout.write(self.style.NOTICE("Creating default articles and categories..."))
+        # call_command("create_content", blog_site_name)
+        # self.stdout.write(self.style.SUCCESS("Default content created successfully."))
+        #
+        # self.stdout.write(self.style.NOTICE("Creating test user..."))
+        # call_command("create_user", "janek", "janek", admin=False)
+        #
+        # self.stdout.write(self.style.NOTICE("Creating test page..."))
+        # call_command("create_page")
+        #
+        # self.stdout.write(self.style.NOTICE("Creating sources..."))
+        # call_command("create_sources")
 
 
     def clear_db(self):
@@ -155,3 +173,10 @@ class Command(BaseCommand):
         from oya.models import Theme  # Import locally to avoid circular imports
         latest_theme = Theme.objects.order_by("-id").first()
         return latest_theme.id if latest_theme else None
+
+    def get_latest_page(self):
+        from netogami.models import Page
+        latest_page = Page.objects.order_by("-created_at").first()
+        return latest_page
+
+
