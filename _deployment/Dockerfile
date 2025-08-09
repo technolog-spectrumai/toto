@@ -13,4 +13,7 @@ WORKDIR /app/toto
 
 RUN python manage.py collectstatic --noinput
 
+# Run your custom init command
+RUN python manage.py init_platform
+
 CMD ["gunicorn", "toto.wsgi:application", "--bind", "0.0.0.0:8000"]
