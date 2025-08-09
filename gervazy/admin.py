@@ -27,7 +27,6 @@ class TLSCertificateAdmin(admin.ModelAdmin):
             "fields": (
                 "common_name",
                 "organization_name",
-                "certificate_status",
                 "certificate",
                 "qr_code_preview",
                 "qr_code",
