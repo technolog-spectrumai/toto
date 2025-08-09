@@ -8,6 +8,8 @@ services:
       - static_volume:/app/toto/staticfiles
     expose:
       - "8000"
+    environment:
+      - DJANGO_ENV=DEBUG
 
   nginx:
     image: nginx:latest
